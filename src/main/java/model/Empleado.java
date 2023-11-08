@@ -2,6 +2,7 @@ package model;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,13 +12,19 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+
+@Entity
+@Table(name= "empleados")
+@NamedQuery(name = "Empleado.findAll",query="select e from Empleado e")
+
 public class Empleado {
-	
-	Integer id; 
-	String nombre; 
-	Double salario; 
-	LocalDate nacido;
-	Departamento departamento;
+
+
+	private Integer id;
+	private String nombre;
+	private Double salario;
+	private LocalDate nacido;
+	private Departamento departamento;
 
 	/**
 	 * Devuelve representación de un empleado
@@ -46,5 +53,14 @@ public class Empleado {
 		
 		return sb.toString();
 	}
-	
+
+	@Id
+	@Column(name = "id")
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getId() {
+		return id;
+	}
 }
