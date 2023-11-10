@@ -1,30 +1,31 @@
 package view;
 
-import java.util.List;
-import java.util.Optional;
-
 import controller.EmpresaController;
 import io.IO;
 import model.Departamento;
 import model.Empleado;
+import model.Proyecto;
 
-public class MenuDepartamento {
-	
+import java.util.List;
+import java.util.Optional;
+
+public class MenuProyecto {
+
 	public static void menu() {
 
 		EmpresaController dao = new EmpresaController();
 
 		List<String> opciones = List.of(
-				"buscar por Código", 
-				"buscar por Nombre", 
-				"Mostrar", 
+				"buscar por Código",
+				"buscar por Nombre",
+				"Mostrar",
 				"Añadir",
 				"modiFicar",
 				"Eliminar",
 				"Salir");
-		
+
 		while (true) {
-			IO.println("Departamentos: " + opciones);
+			IO.println("Proyectos: " + opciones);
 			switch (Character.toUpperCase(IO.readChar())) {
 			case 'C':
 				buscarPorCodigo(dao);
@@ -48,38 +49,44 @@ public class MenuDepartamento {
 				return;
 			default:
 			}
-		}		
-		
+		}
+
 	}
 
 	private static void borrar(EmpresaController dao) {
 		IO.print("Código ? ");
 		Integer id = IO.readInt();
-		Departamento d = (Departamento) dao.getDepartamentoId(id).get();
-		boolean borrado = dao.deleteDepartamento(d);
+		Proyecto d = (Proyecto) dao.getProyectoId(id).get();
+		boolean borrado = dao.deleteProyecto(d);
 		IO.println(borrado ? "Borrado" : "No se ha podido borrar");
 	}
 
 	private static void anadir(EmpresaController dao) {
 		IO.print("Nombre ? ");
-		String nombre = IO.readString();		
-		Departamento d = Departamento.builder().nombre(nombre).build();		
-		Departamento anadido = dao.crearDepartamento(d);
+		String nombre = IO.readString();
+		Proyecto d = Proyecto.builder().nombre(nombre).build();
+		Proyecto anadido = dao.createProyecto(d);
 		IO.println(anadido.isNull() ? "Añadido" : "No se ha podido añadir");
 	}
 
 	private static void modificar(EmpresaController dao) {
 		IO.print("Código del departamento a modificar ? ");
 		Integer id = IO.readInt();
-		Optional<Departamento> d = dao.getDepartamentoId(id);
+		Optional<Proyecto> d = dao.getProyectoId(id);
 		if (d == null) {
-			IO.println("No se ha encontrado el departamento");		
+			IO.println("No se ha encontrado el departamento");
 			return;
 		}
 		IO.printf("Nombre [%s] ? ", d.get().getNombre());
 		String nombre = IO.readString();
 		if (!nombre.isBlank()) {
 			d.get().setNombre(nombre);
+		}
+		Integer empleados = IO.readIntOrNull();
+		if (empleados != null) {
+			Empleado e = dao.getEmpleadoId(empleados).get();
+			Proyecto anadido = d.get().setEmpleado(e);
+			IO.println(anadido.isNull() ? "Modificado" : "No se ha podido modificar");
 		}
 		IO.printf("Jefe [%s] ? ", d.get().getJefe().show());
 		Integer jefe = IO.readIntOrNull();

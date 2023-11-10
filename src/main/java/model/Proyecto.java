@@ -1,8 +1,6 @@
 package model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,8 +15,11 @@ import lombok.NoArgsConstructor;
 @Table(name= "proyectos")
 @NamedQuery(name = "Proyecto.findAll", query = "SELECT p FROM Proyecto p")
 public class Proyecto {
-    Integer id ;
-    String nombre;
+    @Id
+    private Integer id ;
+    private String nombre;
+    @ManyToMany
+    private Empleado empleado;
     public String show() {
         if (id == 0) {
             return "no proyecto!!!";
@@ -28,5 +29,17 @@ public class Proyecto {
         sb.append(String.format("%2d:%-20s:", id, nombre));
 
         return sb.toString();
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public boolean isNull(){
+        return this==null;
     }
 }

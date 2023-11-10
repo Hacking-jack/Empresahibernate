@@ -54,4 +54,8 @@ public class Departamento {
     public Integer getId() {
         return id;
     }
+
+    public boolean isNull() {
+        return this==null;
+    }
 }

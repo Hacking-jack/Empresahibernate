@@ -2,7 +2,9 @@ package view;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+import controller.EmpresaController;
 import dao.EmpleadoDao;
 import io.IO;
 import model.Departamento;
@@ -11,8 +13,7 @@ import model.Empleado;
 public class MenuEmpleado {
 	
 	public static void menu() {
-		EmpleadoDao dao = new EmpleadoDao();
-		
+		EmpresaController dao = new EmpresaController();
 		List<String> opciones = List.of( 
 				"buscar por Código", 
 				"buscar por Nombre", 
@@ -51,14 +52,15 @@ public class MenuEmpleado {
 		
 	}
 
-	private static void borrar(EmpleadoDao dao) {
+	private static void borrar(EmpresaController dao) {
 		IO.print("Código ? ");
 		Integer id = IO.readInt();
-		boolean borrado = dao.delete(id);
+		Empleado e = (Empleado) dao.getEmpleadoId(id).get();
+		boolean borrado = dao.deleteEmpleado(e);
 		IO.println(borrado ? "Borrado" : "No se ha podido borrar");
 	}
 
-	private static void anadir(EmpleadoDao dao) {
+	private static void anadir(EmpresaController dao) {
 		IO.print("Nombre ? ");
 		String nombre = IO.readString();
 		IO.print("Salario ? ");
@@ -70,60 +72,60 @@ public class MenuEmpleado {
 				.salario(salario)
 				.nacido(nacido)
 				.build();
-		boolean anadido = dao.create(e);
-		IO.println(anadido ? "Añadido" : "No se ha podido añadir");
+		Empleado anadido = dao.createEmpleado(e);
+		IO.println(anadido.isNull() ? "Añadido" : "No se ha podido añadir");
 	}
 
-	private static void modificar(EmpleadoDao dao) {
+	private static void modificar(EmpresaController dao) {
 		IO.print("Código del empleado a modificar ? ");
 		Integer id = IO.readInt();
-		Empleado emp = dao.findById(id);
+		Optional<Empleado> emp = dao.getEmpleadoId(id);
 		if (emp == null) {
 			IO.println("No se ha encontrado al empleado");
 			return;
 		}
-		IO.printf("Nombre [%s] ? ", emp.getNombre());
+		IO.printf("Nombre [%s] ? ", emp.get().getNombre());
 		String nombre = IO.readString();
 		if (!nombre.isBlank()) {
-			emp.setNombre(nombre);
+			emp.get().setNombre(nombre);
 		}
-		IO.printf("Salario [%s] ? ", emp.getSalario());
+		IO.printf("Salario [%s] ? ", emp.get().getSalario());
 		Double salario = IO.readDoubleOrNull();
 		if (salario != null) {
-			emp.setSalario(salario);
+			emp.get().setSalario(salario);
 		}
-		IO.printf("Nacido (aaaa-mm-dd) [%s] ? ", emp.getNacido());
+		IO.printf("Nacido (aaaa-mm-dd) [%s] ? ", emp.get().getNacido());
 		LocalDate nacido = IO.readLocalDateOrNull();
 		if (nacido != null) {
-			emp.setNacido(nacido);
+			emp.get().setNacido(nacido);
 		}
-		IO.printf("Departamento [%s] ? ", emp.getDepartamento().show());
+		IO.printf("Departamento [%s] ? ", emp.get().getDepartamento().show());
 		Integer departamento = IO.readIntOrNull();
 		if (departamento != null) {
-			emp.setDepartamento(Departamento.builder().id(departamento).build());
+			emp.get().setDepartamento(Departamento.builder().id(departamento).build());
 		}
-		boolean anadido = dao.update(emp);
-		IO.println(anadido ? "Modificado" : "No se ha podido modificar");		
+		Empleado anadido = dao.createEmpleado(emp.get());
+		IO.println(anadido.isNull() ? "Modificado" : "No se ha podido modificar");
 	}
 
-	private static void mostrar(EmpleadoDao dao) {
-		for (Empleado e : dao.findAll()) {
+	private static void mostrar(EmpresaController dao) {
+		for (Empleado e : dao.getEmpleados()) {
 			IO.println(e.show());
 		}
 	}
 
-	private static void buscarPorInicioDelNombre(EmpleadoDao dao) {
+	private static void buscarPorInicioDelNombre(EmpresaController dao) {
 		IO.print("El nombre empieza por ? ");
 		String inicio = IO.readString();
-		for (Empleado e : dao.findByName(inicio)) {
+		for (Empleado e : dao.getEmpleadosByNombre(inicio)) {
 			IO.println(e.show());
 		}
 	}
 
-	private static void buscarPorCodigo(EmpleadoDao dao) {
+	private static void buscarPorCodigo(EmpresaController dao) {
 		IO.print("Código ? ");
 		Integer id = IO.readInt();
-		Empleado e = dao.findById(id);
+		Empleado e = dao.getEmpleadoId(id).get();
 		if (e != null) {
 			IO.println(e.show());
 		}

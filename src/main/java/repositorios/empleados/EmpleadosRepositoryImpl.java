@@ -31,11 +31,19 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
         hb.open();
         Optional<Empleado> empleado = Optional.ofNullable(hb.getManager().find(Empleado.class, integer));
         hb.close();
-        return empleado;    }
+        return empleado;
+    }
 
     @Override
-    public List<Empleado> findByName(Empleado entity) {
-        return null;
+    public List<Empleado> findByName(String nombre) {
+        logger.info("findByName()");
+        HibernateManager hb = HibernateManager.getInstance();
+        hb.open();
+        TypedQuery<Empleado> query = hb.getManager().createQuery("SELECT e FROM Empleado e WHERE e.nombre = :nombre", Empleado.class);
+        query.setParameter("nombre", nombre);
+        List<Empleado> list = query.getResultList();
+        hb.close();
+        return list;
     }
 
     @Override
@@ -45,11 +53,11 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
         hb.open();
         hb.getTransaction().begin();
 
-        // Por otro lado y si la raqueta no existe? Podemos controlar que exista la raqueta
-        // antes de guardar el tenista o que la inserte con el tenista. Vamos a ser restrictivos
-        var existeDepartamento = hb.getManager().find(entity.getId().getClass(), entity.getNombre().getUuid());
-        if (existeRaqueta == null) {
-            throw new EmpleadoException("La raqueta con uuid " + entity.getNombre().) + " no existe" );
+        // Por otro lado y si la raqueta no existe? Podemos controlar que exista el departamento
+        // antes de guardar el empleado o que la inserte con el empleado. Vamos a ser restrictivos
+        var existeDepartamento = hb.getManager().find(entity.getClass(), entity.getDepartamento().getId());
+        if (existeDepartamento == null) {
+            throw new EmpleadoException("El departamento con nombre: " + entity.getDepartamento().getNombre() + " no existe");
         }
         try {
             hb.getManager().merge(entity);
@@ -57,12 +65,13 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
             hb.close();
             return entity;
         } catch (Exception e) {
-            throw new EmpleadoException("Error al salvar tenista con uuid: " + entity.getUuid() + "\n" + e.getMessage());
+            throw new EmpleadoException("Error al salvar Empleado con Nombre: " + entity.getNombre() + "\n" + e.getMessage());
         } finally {
             if (hb.getTransaction().isActive()) {
                 hb.getTransaction().rollback();
             }
-        }    }
+        }
+    }
 
     @Override
     public Boolean delete(Empleado entity) {
@@ -84,20 +93,5 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
                 hb.getTransaction().rollback();
             }
         }
-    }
-
-    @Override
-    public Boolean update(Empleado entity) {
-        return null;
-    }
-
-    @Override
-    public Optional<Empleado> read(Empleado entity) {
-        return Optional.empty();
-    }
-
-    @Override
-    public List<Empleado> get(Empleado entity) {
-        return null;
     }
 }

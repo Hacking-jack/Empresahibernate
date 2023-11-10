@@ -25,6 +25,8 @@ public class Empleado {
 	private Double salario;
 	private LocalDate nacido;
 	private Departamento departamento;
+	@ManyToMany
+	private Proyecto proyecto;
 
 	/**
 	 * Devuelve representación de un empleado
@@ -62,5 +64,9 @@ public class Empleado {
 
 	public Integer getId() {
 		return id;
+	}
+
+	public boolean isNull() {
+		return this==null;
 	}
 }
