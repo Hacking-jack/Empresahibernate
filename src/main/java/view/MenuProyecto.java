@@ -85,7 +85,7 @@ public class MenuProyecto {
 		Integer empleados = IO.readIntOrNull();
 		if (empleados != null) {
 			Empleado e = dao.getEmpleadoId(empleados).get();
-			Proyecto anadido = d.get().setEmpleado(e);
+			d.get().setEmpleado(e);
 			IO.println(anadido.isNull() ? "Modificado" : "No se ha podido modificar");
 		}
 		IO.printf("Jefe [%s] ? ", d.get().getJefe().show());
