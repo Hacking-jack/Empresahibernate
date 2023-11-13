@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
 @Entity
 @Table(name = "departamentos")
 @NamedQuery(name = "Departamento.findAll", query = "select d from Departamento d")
@@ -18,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Departamento {
 
 
-
+@Id
     private Integer id;
     private String nombre;
     private Empleado jefe;
@@ -44,16 +43,7 @@ public class Departamento {
         return sb.toString();
     }
 
-    @Id
-    @GeneratedValue
-    @Column(name = "id")
-    public void setId(Integer id) {
-        this.id = id;
-    }
 
-    public Integer getId() {
-        return id;
-    }
 
     public boolean isNull() {
         return this==null;

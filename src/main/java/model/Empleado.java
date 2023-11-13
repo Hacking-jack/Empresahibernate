@@ -3,24 +3,19 @@ package model;
 import java.time.LocalDate;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
 @Entity
 @Table(name= "empleados")
 @NamedQuery(name = "Empleado.findAll",query="select e from Empleado e")
 
 public class Empleado {
-
-
-	private Integer id;
+	@Id
+	private  Integer id;
 	private String nombre;
 	private Double salario;
 	private LocalDate nacido;
@@ -54,16 +49,6 @@ public class Empleado {
 		}
 		
 		return sb.toString();
-	}
-
-	@Id
-	@Column(name = "id")
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public Integer getId() {
-		return id;
 	}
 
 	public boolean isNull() {

@@ -18,7 +18,7 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
         logger.info("findAll()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
-        TypedQuery<Empleado> query = hb.getManager().createQuery("Empleado.findAll", Empleado.class);
+        TypedQuery<Empleado> query = hb.getManager().createNamedQuery("Empleado.findAll", Empleado.class);
         List<Empleado> list = query.getResultList();
         hb.close();
         return list;

@@ -18,7 +18,7 @@ public class DepartamentosRepositoryImpl implements DepartamentosRepository {
         logger.info("findAll()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
-        TypedQuery<Departamento> query = hb.getManager().createQuery("Departamento.findAll", Departamento.class);
+        TypedQuery<Departamento> query = hb.getManager().createNamedQuery("Departamento.findAll", Departamento.class);
         List<Departamento> list = query.getResultList();
         hb.close();
         return list;

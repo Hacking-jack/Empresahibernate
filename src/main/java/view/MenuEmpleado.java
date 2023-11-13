@@ -4,8 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-import controller.EmpresaController;
-import dao.EmpleadoDao;
+import controller.EmpleadoController;
 import io.IO;
 import model.Departamento;
 import model.Empleado;
@@ -13,7 +12,7 @@ import model.Empleado;
 public class MenuEmpleado {
 	
 	public static void menu() {
-		EmpresaController dao = new EmpresaController();
+		EmpleadoController dao = new EmpleadoController();
 		List<String> opciones = List.of( 
 				"buscar por Código", 
 				"buscar por Nombre", 
@@ -52,7 +51,7 @@ public class MenuEmpleado {
 		
 	}
 
-	private static void borrar(EmpresaController dao) {
+	private static void borrar(EmpleadoController dao) {
 		IO.print("Código ? ");
 		Integer id = IO.readInt();
 		Empleado e = (Empleado) dao.getEmpleadoId(id).get();
@@ -60,7 +59,7 @@ public class MenuEmpleado {
 		IO.println(borrado ? "Borrado" : "No se ha podido borrar");
 	}
 
-	private static void anadir(EmpresaController dao) {
+	private static void anadir(EmpleadoController dao) {
 		IO.print("Nombre ? ");
 		String nombre = IO.readString();
 		IO.print("Salario ? ");
@@ -76,7 +75,7 @@ public class MenuEmpleado {
 		IO.println(anadido.isNull() ? "Añadido" : "No se ha podido añadir");
 	}
 
-	private static void modificar(EmpresaController dao) {
+	private static void modificar(EmpleadoController dao) {
 		IO.print("Código del empleado a modificar ? ");
 		Integer id = IO.readInt();
 		Optional<Empleado> emp = dao.getEmpleadoId(id);
@@ -108,13 +107,13 @@ public class MenuEmpleado {
 		IO.println(anadido.isNull() ? "Modificado" : "No se ha podido modificar");
 	}
 
-	private static void mostrar(EmpresaController dao) {
+	private static void mostrar(EmpleadoController dao) {
 		for (Empleado e : dao.getEmpleados()) {
 			IO.println(e.show());
 		}
 	}
 
-	private static void buscarPorInicioDelNombre(EmpresaController dao) {
+	private static void buscarPorInicioDelNombre(EmpleadoController dao) {
 		IO.print("El nombre empieza por ? ");
 		String inicio = IO.readString();
 		for (Empleado e : dao.getEmpleadosByNombre(inicio)) {
@@ -122,7 +121,7 @@ public class MenuEmpleado {
 		}
 	}
 
-	private static void buscarPorCodigo(EmpresaController dao) {
+	private static void buscarPorCodigo(EmpleadoController dao) {
 		IO.print("Código ? ");
 		Integer id = IO.readInt();
 		Empleado e = dao.getEmpleadoId(id).get();

@@ -3,7 +3,8 @@ package view;
 import java.util.List;
 import java.util.Optional;
 
-import controller.EmpresaController;
+import controller.DepartamentoController;
+import controller.EmpleadoController;
 import io.IO;
 import model.Departamento;
 import model.Empleado;
@@ -12,7 +13,7 @@ public class MenuDepartamento {
 	
 	public static void menu() {
 
-		EmpresaController dao = new EmpresaController();
+		DepartamentoController dao = new DepartamentoController();
 
 		List<String> opciones = List.of(
 				"buscar por Código", 
@@ -52,7 +53,7 @@ public class MenuDepartamento {
 		
 	}
 
-	private static void borrar(EmpresaController dao) {
+	private static void borrar(DepartamentoController dao) {
 		IO.print("Código ? ");
 		Integer id = IO.readInt();
 		Departamento d = (Departamento) dao.getDepartamentoId(id).get();
@@ -60,7 +61,7 @@ public class MenuDepartamento {
 		IO.println(borrado ? "Borrado" : "No se ha podido borrar");
 	}
 
-	private static void anadir(EmpresaController dao) {
+	private static void anadir(DepartamentoController dao) {
 		IO.print("Nombre ? ");
 		String nombre = IO.readString();		
 		Departamento d = Departamento.builder().nombre(nombre).build();		
@@ -68,7 +69,7 @@ public class MenuDepartamento {
 		IO.println(anadido.isNull() ? "Añadido" : "No se ha podido añadir");
 	}
 
-	private static void modificar(EmpresaController dao) {
+	private static void modificar(DepartamentoController dao) {
 		IO.print("Código del departamento a modificar ? ");
 		Integer id = IO.readInt();
 		Optional<Departamento> d = dao.getDepartamentoId(id);
@@ -84,20 +85,21 @@ public class MenuDepartamento {
 		IO.printf("Jefe [%s] ? ", d.get().getJefe().show());
 		Integer jefe = IO.readIntOrNull();
 		if (jefe != null) {
-			EmpresaController daoEmpleado = new EmpresaController();
+
+			EmpleadoController daoEmpleado = new EmpleadoController();
 			d.get().setJefe(daoEmpleado.getEmpleadoId(jefe).get());
 		}
 		Departamento anadido = dao.crearDepartamento(d.get());
 		IO.println(anadido.isNull() ? "Modificado" : "No se ha podido modificar");
 	}
 
-	private static void mostrar(EmpresaController dao) {
+	private static void mostrar(DepartamentoController dao) {
 		for (Departamento d : dao.getDepartamentos()) {
 			IO.println(d.show());
 		}
 	}
 
-	private static void buscarPorInicioDelNombre(EmpresaController dao) {
+	private static void buscarPorInicioDelNombre(DepartamentoController dao) {
 		IO.print("El nombre empieza por ? ");
 		String inicio = IO.readString();
 		for (Departamento d : dao.getDepartamentosByNombre(inicio)) {
@@ -105,14 +107,15 @@ public class MenuDepartamento {
 		}
 	}
 
-	private static void buscarPorCodigo(EmpresaController dao) {
+	private static void buscarPorCodigo(DepartamentoController dao) {
 		IO.print("Código ? ");
 		Integer id = IO.readInt();
 		Optional<Departamento> d = dao.getDepartamentoId(id);
 		if (d != null) {
 			IO.println(d.get().show());
 			IO.println("* Empleados del departamento :");
-			for (Empleado e : dao.getEmpleados()) {
+			EmpleadoController ep =new EmpleadoController();
+			for (Empleado e : ep.getEmpleados()) {
 				IO.println(e.show());
 			}
 		}

@@ -20,7 +20,7 @@ public class ProyectosRepositoryImpl implements ProyectosRepository {
         logger.info("findAll()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
-        TypedQuery<Proyecto> query = hb.getManager().createQuery("Proyecto.findAll", Proyecto.class);
+        TypedQuery<Proyecto> query = hb.getManager().createNamedQuery("Proyecto.findAll", Proyecto.class);
         List<Proyecto> list = query.getResultList();
         hb.close();
         return list;
