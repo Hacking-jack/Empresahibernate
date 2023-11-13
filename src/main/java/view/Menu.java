@@ -3,15 +3,19 @@ package view;
 import java.util.List;
 
 import dao.BD;
+import db.DataDB;
+import db.HibernateManager;
 import io.IO;
+import lombok.Data;
 
 public class Menu {
 	
 	public static void main(String[] args) {
-		
+
 		List<String> opciones = List.of( 
 				"Empleados", 
-				"Departamentos", 
+				"Departamentos",
+				"Proyectos",
 				"Salir");
 		
 		while (true) {
@@ -23,8 +27,11 @@ public class Menu {
 			case 'D':
 				MenuDepartamento.menu();
 				break;
+			case 'P':
+				MenuProyecto.menu();
+				break;
 			case 'S':
-				BD.close();
+				.close();
 				return;
 			default:
 			}
