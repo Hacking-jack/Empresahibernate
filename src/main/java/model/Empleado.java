@@ -1,9 +1,11 @@
 package model;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 @Data
 @Builder
@@ -15,14 +17,23 @@ import lombok.*;
 
 public class Empleado {
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private  Integer id;
 	private String nombre;
 	private Double salario;
 	private LocalDate nacido;
+	@OneToOne
+	@Nullable
 	private Departamento departamento;
-	@ManyToMany
-	private Proyecto proyecto;
+	@ManyToMany(mappedBy = "empleado")
+	private List<Proyecto> proyecto;
 
+	public void addProyecto(Proyecto p){
+		if (proyecto == null) {
+			System.out.println("Proyecto invalido");
+		}
+		proyecto.add(p);
+	}
 	/**
 	 * Devuelve representación de un empleado
 	 * 

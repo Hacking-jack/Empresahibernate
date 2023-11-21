@@ -1,10 +1,9 @@
 package model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.List;
 
 @Data
 @Builder
@@ -15,11 +14,23 @@ import lombok.NoArgsConstructor;
 @NamedQuery(name = "Proyecto.findAll", query = "SELECT p FROM Proyecto p")
 public class Proyecto {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id ;
 
     private String nombre;
     @ManyToMany
-    private Empleado empleado;
+    @JoinTable(
+            name = "proyecto_empleado",
+            joinColumns = @JoinColumn(name = "proyecto_id"),
+            inverseJoinColumns = @JoinColumn(name = "empleado_id")
+    )
+    private List<Empleado> empleado;
+    public void añadirEmpleado(Empleado e){
+        if (this.empleado == null) {
+            System.out.println("No se pudo añadir empleado");
+        }
+        this.empleado.add(e);
+    }
     public String show() {
         if (id == 0) {
             return "no proyecto!!!";

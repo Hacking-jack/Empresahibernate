@@ -90,13 +90,13 @@ public class MenuProyecto {
         if (empleadosId != null) {
 
             Empleado e = daoE.getEmpleadoId(empleadosId).get();
-            d.get().setEmpleado(e);
+            d.get().añadirEmpleado(e);
         }
-        IO.printf("Jefe [%s] ? ", d.get().getEmpleado().show());
-        Integer jefe = IO.readIntOrNull();
-        if (jefe != null) {
-            d.get().setEmpleado(daoE.getEmpleadoId(jefe).get());
-        }
+//        IO.printf("Jefe [%s] ? ", d.get().getEmpleado().show());
+//        Integer jefe = IO.readIntOrNull();
+//        if (jefe != null) {
+//            d.get().setEmpleado(daoE.getEmpleadoId(jefe).get());
+//        }
         Proyecto anadido = dao.createProyecto(d.get());
         IO.println(anadido.isNull() ? "Modificado" : "No se ha podido modificar");
     }

@@ -55,9 +55,11 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
 
         // Por otro lado y si la raqueta no existe? Podemos controlar que exista el departamento
         // antes de guardar el empleado o que la inserte con el empleado. Vamos a ser restrictivos
+        if(entity.getDepartamento() != null){
         var existeDepartamento = hb.getManager().find(entity.getClass(), entity.getDepartamento().getId());
-        if (existeDepartamento == null) {
-            throw new EmpleadoException("El departamento con nombre: " + entity.getDepartamento().getNombre() + " no existe");
+            if (existeDepartamento == null) {
+                throw new EmpleadoException("El departamento con nombre: " + entity.getDepartamento().getNombre() + " no existe");
+            }
         }
         try {
             hb.getManager().merge(entity);

@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 @Data
 @Builder
@@ -17,9 +18,12 @@ import lombok.NoArgsConstructor;
 public class Departamento {
 
 
-@Id
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String nombre;
+    @OneToOne
+    @Nullable
     private Empleado jefe;
 
     /**
