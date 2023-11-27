@@ -7,7 +7,9 @@ import view.MenuEmpleado;
 import view.MenuProyecto;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Builder
@@ -23,27 +25,25 @@ public class Proyecto {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id ;
 
+    @Column(nullable = false)
     private String nombre;
 
 
 
-    @ManyToMany(fetch=FetchType.EAGER)
+    @ManyToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "proyecto_empleado",
             joinColumns = @JoinColumn(name = "proyecto_id"),
             inverseJoinColumns = @JoinColumn(name = "empleado_id")
     )
-    private List<Empleado> empleado = new ArrayList<Empleado>();
+    private Set<Empleado> empleado = new HashSet<Empleado>();
     public void addEmpleado(Empleado e) {
         if (empleado == null) {
-            empleado = new ArrayList<>();
+            empleado = new HashSet<>();
         }
 
-        if (!empleado.contains(e)) {
-            empleado.add(e);
-            e.getProyecto().add(this);
-        }
-        new ProyectoController().createProyecto(this);
+        e.getProyecto().add(this);
+        this.getEmpleado().add(e);
     }
 
     public void removeEmpleado(Empleado e) {

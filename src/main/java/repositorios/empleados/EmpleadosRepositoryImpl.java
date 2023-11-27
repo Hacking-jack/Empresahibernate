@@ -8,6 +8,7 @@ import model.Proyecto;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class EmpleadosRepositoryImpl implements EmpleadosRepository {
@@ -19,7 +20,7 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
         TypedQuery<Empleado> query = hb.getManager().createQuery("SELECT e FROM Empleado e", Empleado.class);
-        List<Empleado> list = query.getResultList();
+        List<Empleado> list =  query.getResultList();
         hb.close();
         return list;
     }
@@ -46,44 +47,6 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
         return list;
     }
 
-
-
-
-
-    @Override
-    public Empleado modify(Empleado entity) {
-        logger.info("modify()");
-        HibernateManager hb = HibernateManager.getInstance();
-        hb.open();
-        hb.getTransaction().begin();
-
-        // Por otro lado y si la raqueta no existe? Podemos controlar que exista el departamento
-        // antes de guardar el empleado o que la inserte con el empleado. Vamos a ser restrictivos
-        if(entity.getDepartamento() != null){
-            var existeDepartamento = hb.getManager().find(entity.getClass(), entity.getDepartamento().getId());
-            if (existeDepartamento == null) {
-                throw new EmpleadoException("El departamento con nombre: " + entity.getDepartamento().getNombre() + " no existe");
-            }
-        }
-        try {
-            hb.getManager().merge(entity);
-            hb.getTransaction().commit();
-            hb.close();
-            return entity;
-        } catch (Exception e) {
-            throw new EmpleadoException("Error al salvar Empleado con Nombre: " + entity.getNombre() + "\n" + e.getMessage());
-        } finally {
-            if (hb.getTransaction().isActive()) {
-                hb.getTransaction().rollback();
-            }
-        }
-    }
-
-
-
-
-
-
     @Override
     public Empleado create(Empleado entity) {
         logger.info("save()");
@@ -91,16 +54,9 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
         hb.open();
         hb.getTransaction().begin();
 
-        if (entity.getDepartamento() != null) {
-            var existeDepartamento = hb.getManager().find(entity.getDepartamento().getClass(), entity.getDepartamento().getId());
-            if (existeDepartamento == null) {
-                throw new EmpleadoException("El departamento con nombre: " + entity.getDepartamento().getNombre() + " no existe");
-            }
-        }
 
         try {
             hb.getManager().merge(entity);
-            hb.getManager().flush();
             hb.getTransaction().commit();
             hb.close();
             return entity;
@@ -121,11 +77,11 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
         try {
             hb.getTransaction().begin();
             entity.removeDepartamento();
-            List<Proyecto> proyectos = entity.getProyecto();
+            Set<Proyecto> proyectos = entity.getProyecto();
             for (int i = 0; i < proyectos.size(); i++) {
-                proyectos.get(i).removeEmpleado(entity);
+          //      proyectos.get(i).removeEmpleado(entity);
             }
-            modify(entity);
+            create(entity);
             hb.getManager().remove(entity);
             hb.getTransaction().commit();
             hb.close();

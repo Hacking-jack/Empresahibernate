@@ -137,7 +137,7 @@ public class MenuEmpleado {
             IO.println("Saliendo");
         }
         IO.println("Departamento");
-        IO.printf("Departamento [%s] ? ", emp.get().getDepartamento().show());
+        IO.printf("Departamento [%s] ? ", emp.get().getDepartamento());
         Integer departamento = IO.readIntOrNull();
         if (departamento != null) {
             emp.get().setDepartamento(Departamento.builder().id(departamento).build());

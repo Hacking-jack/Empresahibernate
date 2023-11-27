@@ -1,20 +1,18 @@
 package model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.hibernate.annotations.Cascade;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-
+@EqualsAndHashCode(exclude = {"empleado", "jefe"})
 
 @Entity
 @Table(name = "departamentos")
@@ -30,19 +28,29 @@ public class Departamento {
     private String nombre;
 
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
-    private List<Empleado> empleados;
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<Empleado> empleados = new ArrayList<>();
 
     @OneToOne
     @Nullable
+    @JoinColumn(name = "jefe_id", referencedColumnName = "id")
     private Empleado jefe;
 
     public void removeEmpleado(Empleado e) {
      empleados.remove(e);
      e.setDepartamento(null);
     }
-
+    public void addJefe(Empleado jefe) {
+        this.setJefe(jefe);
+        jefe.setDepartamento(this);
+    }
+    public void addEmpleado(Empleado e) {
+        if (this.getEmpleados() == null) {
+            this.setEmpleados(new ArrayList<>());
+        }
+        this.getEmpleados().add(e);
+        e.setDepartamento(this);
+    }
     /**
      * Devuelve representación de un departamento
      *

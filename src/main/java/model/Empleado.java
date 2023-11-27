@@ -2,7 +2,9 @@ package model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.IO;
 import jakarta.persistence.*;
@@ -13,7 +15,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
+@EqualsAndHashCode(exclude = "proyecto")
 
 
 @Entity
@@ -30,8 +32,13 @@ public class Empleado {
     @Nullable
     @ManyToOne(fetch = FetchType.EAGER)
     private Departamento departamento;
+
     @ManyToMany(fetch = FetchType.EAGER,mappedBy = "empleado")
-    private List<Proyecto> proyecto = new ArrayList<Proyecto>();
+
+    private Set<Proyecto> proyecto = new HashSet<>();
+
+    @OneToOne(mappedBy = "jefe")
+    private Departamento departamentoJefe;
 
     public void removeDepartamento() {
         departamento.removeEmpleado(this);
@@ -40,16 +47,21 @@ public class Empleado {
     public void addProyecto(Proyecto p){
         if(p != null){
         if(proyecto == null){
-            proyecto = new ArrayList<>();
+            proyecto = new HashSet<>();
         }
         proyecto.add(p);
-        p.addEmpleado(this);
+        if (p.getEmpleado()==null){
+            p.setEmpleado(new HashSet<>());
+        }
+        Empleado nuevo= Empleado.builder().id(id).build();
+        p.getEmpleado().add(nuevo);
     }
     }
     public void mostrarProyectos(){
-        for (int i = 0; i < proyecto.size(); i++) {
-            IO.println(proyecto.get(i).show());
-        }
+            for(Proyecto proyecto1 : proyecto){
+            IO.println(proyecto1.show());
+            }
+
     }
     /**
      * Devuelve representación de un empleado

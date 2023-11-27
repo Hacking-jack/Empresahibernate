@@ -12,6 +12,7 @@ import repositorios.departamentos.DepartamentosRepositoryImpl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class ProyectosRepositoryImpl implements ProyectosRepository {
@@ -47,27 +48,6 @@ public class ProyectosRepositoryImpl implements ProyectosRepository {
         return list;
     }
 
-    @Override
-    public Proyecto modify(Proyecto entity) {
-        logger.info("save()");
-        HibernateManager hb = HibernateManager.getInstance();
-        hb.open();
-        hb.getTransaction().begin();
-
-
-        try {
-            hb.getManager().merge(entity);
-            hb.getTransaction().commit();
-            hb.close();
-            return entity;
-        } catch (Exception e) {
-            throw new EmpleadoException("Error al salvar Departamento con Nombre: " + entity.getNombre() + "\n" + e.getMessage());
-        } finally {
-            if (hb.getTransaction().isActive()) {
-                hb.getTransaction().rollback();
-            }
-        }
-    }
 
     @Override
     public Proyecto create(Proyecto entity) {
@@ -97,12 +77,15 @@ public class ProyectosRepositoryImpl implements ProyectosRepository {
         hb.open();
         try {
             hb.getTransaction().begin();
-            List<Empleado> empleados=  entity.getEmpleado();
+            entity = hb.getManager().find(Proyecto.class, findAll());
+            create(entity);
+
+            Set<Empleado> empleados=  entity.getEmpleado();
             if(empleados == null){
-            for (int i = 0; i < empleados.size(); i++) {
-                entity.removeEmpleado(empleados.get(i));
+           for(Empleado empl: empleados){
+                entity.removeEmpleado(empl);
             }}
-            modify(entity);
+            create(entity);
             hb.getManager().remove(entity);
             hb.getTransaction().commit();
             return true;
