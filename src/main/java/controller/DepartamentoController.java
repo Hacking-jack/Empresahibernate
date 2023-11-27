@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 @AllArgsConstructor
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 public class DepartamentoController {
 	
 	private final Logger logger = Logger.getLogger(DepartamentoController.class.getName());
