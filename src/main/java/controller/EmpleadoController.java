@@ -2,12 +2,9 @@ package controller;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
-import model.Departamento;
 import model.Empleado;
-import model.Proyecto;
-import repositorios.departamentos.DepartamentosRepository;
 import repositorios.empleados.EmpleadosRepository;
-import repositorios.proyectos.ProyectosRepository;
+import repositorios.empleados.EmpleadosRepositoryImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +14,7 @@ import java.util.logging.Logger;
 public class EmpleadoController {
 
 	private final Logger logger = Logger.getLogger(EmpleadoController.class.getName());
-	private final EmpleadosRepository empleadosRepository;
+	private  EmpleadosRepository empleadosRepository =new EmpleadosRepositoryImpl();
 	
     public List<Empleado> getEmpleados(){
         logger.info("Obteniendo Empleados");

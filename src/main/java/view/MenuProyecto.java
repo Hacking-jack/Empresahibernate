@@ -63,7 +63,7 @@ public class MenuProyecto {
         IO.println(borrado ? "Borrado" : "No se ha podido borrar");
     }
 
-    private static void anadir(ProyectoController dao) {
+    public static void anadir(ProyectoController dao) {
         IO.print("Nombre ? ");
         String nombre = IO.readString();
         Proyecto d = Proyecto.builder().nombre(nombre).build();
@@ -78,7 +78,7 @@ public class MenuProyecto {
         Integer id = IO.readInt();
         Optional<Proyecto> d = dao.getProyectoId(id);
         if (d == null) {
-            IO.println("No se ha encontrado el departamento");
+            IO.println("No se ha encontrado el proyecto");
             return;
         }
         IO.printf("Nombre [%s] ? ", d.get().getNombre());
@@ -86,22 +86,11 @@ public class MenuProyecto {
         if (!nombre.isBlank()) {
             d.get().setNombre(nombre);
         }
-        Integer empleadosId = IO.readIntOrNull();
-        if (empleadosId != null) {
-
-            Empleado e = daoE.getEmpleadoId(empleadosId).get();
-            d.get().setEmpleado(e);
-        }
-        IO.printf("Jefe [%s] ? ", d.get().getEmpleado().show());
-        Integer jefe = IO.readIntOrNull();
-        if (jefe != null) {
-            d.get().setEmpleado(daoE.getEmpleadoId(jefe).get());
-        }
         Proyecto anadido = dao.createProyecto(d.get());
         IO.println(anadido.isNull() ? "Modificado" : "No se ha podido modificar");
     }
 
-    private static void mostrar(ProyectoController dao) {
+    public static void mostrar(ProyectoController dao) {
         for (Proyecto d : dao.getProyectos()) {
             IO.println(d.show());
         }
@@ -120,13 +109,10 @@ public class MenuProyecto {
         EmpleadoController daoE = new EmpleadoController();
         IO.print("Código ? ");
         Integer id = IO.readInt();
-        Optional<Departamento> d = daoD.getDepartamentoId(id);
-        if (d != null) {
-            IO.println(d.get().show());
-            IO.println("* Empleados del departamento :");
-            for (Empleado e : daoE.getEmpleados()) {
-                IO.println(e.show());
-            }
+        Optional<Proyecto> p = dao.getProyectoId(id);
+        if (!p.isEmpty()) {
+            IO.println(p.get().show());
+
         }
     }
 

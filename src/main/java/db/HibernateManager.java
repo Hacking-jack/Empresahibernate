@@ -6,6 +6,9 @@ import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
 import lombok.Getter;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Getter
 public class HibernateManager {
     private static HibernateManager controller;
@@ -25,8 +28,10 @@ public class HibernateManager {
     }
 
     public void open() {
+        Logger.getLogger("org.hibernate").setLevel(Level.SEVERE);
         entityManagerFactory = Persistence.createEntityManagerFactory("default");
-        manager = entityManagerFactory.createEntityManager();
+      // manager= Persistence.createEntityManagerFactory("default").createEntityManager();
+       manager = entityManagerFactory.createEntityManager();
         transaction = manager.getTransaction();
     }
 

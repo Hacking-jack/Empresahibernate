@@ -9,6 +9,7 @@ public interface CrudRepository<T,ID> {
     Optional<T> findById(ID id);
     List<T> findByName(String name);
 
+    T modify(T entity);
     T create(T entity);
 
     Boolean delete(T entity);

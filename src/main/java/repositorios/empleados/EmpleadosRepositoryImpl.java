@@ -3,8 +3,8 @@ package repositorios.empleados;
 import db.HibernateManager;
 import exceptions.EmpleadoException;
 import jakarta.persistence.TypedQuery;
-import model.Departamento;
 import model.Empleado;
+import model.Proyecto;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +18,7 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
         logger.info("findAll()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
-        TypedQuery<Empleado> query = hb.getManager().createNamedQuery("Empleado.findAll", Empleado.class);
+        TypedQuery<Empleado> query = hb.getManager().createQuery("SELECT e FROM Empleado e", Empleado.class);
         List<Empleado> list = query.getResultList();
         hb.close();
         return list;
@@ -46,18 +46,24 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
         return list;
     }
 
+
+
+
+
     @Override
-    public Empleado create(Empleado entity) {
-        logger.info("save()");
+    public Empleado modify(Empleado entity) {
+        logger.info("modify()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
         hb.getTransaction().begin();
 
         // Por otro lado y si la raqueta no existe? Podemos controlar que exista el departamento
         // antes de guardar el empleado o que la inserte con el empleado. Vamos a ser restrictivos
-        var existeDepartamento = hb.getManager().find(entity.getClass(), entity.getDepartamento().getId());
-        if (existeDepartamento == null) {
-            throw new EmpleadoException("El departamento con nombre: " + entity.getDepartamento().getNombre() + " no existe");
+        if(entity.getDepartamento() != null){
+            var existeDepartamento = hb.getManager().find(entity.getClass(), entity.getDepartamento().getId());
+            if (existeDepartamento == null) {
+                throw new EmpleadoException("El departamento con nombre: " + entity.getDepartamento().getNombre() + " no existe");
+            }
         }
         try {
             hb.getManager().merge(entity);
@@ -73,6 +79,40 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
         }
     }
 
+
+
+
+
+
+    @Override
+    public Empleado create(Empleado entity) {
+        logger.info("save()");
+        HibernateManager hb = HibernateManager.getInstance();
+        hb.open();
+        hb.getTransaction().begin();
+
+        if (entity.getDepartamento() != null) {
+            var existeDepartamento = hb.getManager().find(entity.getDepartamento().getClass(), entity.getDepartamento().getId());
+            if (existeDepartamento == null) {
+                throw new EmpleadoException("El departamento con nombre: " + entity.getDepartamento().getNombre() + " no existe");
+            }
+        }
+
+        try {
+            hb.getManager().merge(entity);
+            hb.getManager().flush();
+            hb.getTransaction().commit();
+            hb.close();
+            return entity;
+        } catch (Exception e) {
+            throw new EmpleadoException("Error al salvar Empleado con Nombre: " + entity.getNombre());
+        } finally {
+            if (hb.getTransaction().isActive()) {
+                hb.getTransaction().rollback();
+            }
+        }
+    }
+
     @Override
     public Boolean delete(Empleado entity) {
         logger.info("delete()");
@@ -80,14 +120,18 @@ public class EmpleadosRepositoryImpl implements EmpleadosRepository {
         hb.open();
         try {
             hb.getTransaction().begin();
-            // Ojo que borrar implica que estemos en la misma sesión y nos puede dar problemas, por eso lo recuperamos otra vez
-            entity = hb.getManager().find(Empleado.class, entity.getId());
+            entity.removeDepartamento();
+            List<Proyecto> proyectos = entity.getProyecto();
+            for (int i = 0; i < proyectos.size(); i++) {
+                proyectos.get(i).removeEmpleado(entity);
+            }
+            modify(entity);
             hb.getManager().remove(entity);
             hb.getTransaction().commit();
             hb.close();
             return true;
         } catch (Exception e) {
-            throw new EmpleadoException("Error al eliminar tenista con uuid: " + entity.getId() + "\n" + e.getMessage());
+            throw new EmpleadoException("Error al eliminar empleado con id: " + entity.getId() + "\n" + e.getMessage());
         } finally {
             if (hb.getTransaction().isActive()) {
                 hb.getTransaction().rollback();

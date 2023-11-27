@@ -8,6 +8,7 @@ import model.Proyecto;
 import repositorios.departamentos.DepartamentosRepository;
 import repositorios.empleados.EmpleadosRepository;
 import repositorios.proyectos.ProyectosRepository;
+import repositorios.proyectos.ProyectosRepositoryImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,7 @@ import java.util.logging.Logger;
 public class ProyectoController {
 	
 	private final Logger logger = Logger.getLogger(ProyectoController.class.getName());
-    private final ProyectosRepository proyectosRepository;
+    private  ProyectosRepository proyectosRepository= new ProyectosRepositoryImpl();
 	
 	  public List<Proyecto> getProyectos(){
 	        logger.info("Obteniendo Proyectos");

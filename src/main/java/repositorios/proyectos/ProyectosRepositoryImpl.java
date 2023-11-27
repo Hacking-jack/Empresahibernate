@@ -48,7 +48,7 @@ public class ProyectosRepositoryImpl implements ProyectosRepository {
     }
 
     @Override
-    public Proyecto create(Proyecto entity) {
+    public Proyecto modify(Proyecto entity) {
         logger.info("save()");
         HibernateManager hb = HibernateManager.getInstance();
         hb.open();
@@ -68,6 +68,28 @@ public class ProyectosRepositoryImpl implements ProyectosRepository {
             }
         }
     }
+
+    @Override
+    public Proyecto create(Proyecto entity) {
+        logger.info("save()");
+        HibernateManager hb = HibernateManager.getInstance();
+        hb.open();
+        hb.getTransaction().begin();
+
+
+        try {
+            hb.getManager().merge(entity);
+            hb.getTransaction().commit();
+            hb.close();
+            return entity;
+        } catch (Exception e) {
+            throw new EmpleadoException("Error al salvar Proyecto con Nombre: " + entity.getNombre() + "\n" + e.getMessage());
+        } finally {
+            if (hb.getTransaction().isActive()) {
+                hb.getTransaction().rollback();
+            }
+        }
+    }
     @Override
     public Boolean delete(Proyecto entity) {
         logger.info("delete()");
@@ -75,11 +97,14 @@ public class ProyectosRepositoryImpl implements ProyectosRepository {
         hb.open();
         try {
             hb.getTransaction().begin();
-            // Ojo que borrar implica que estemos en la misma sesión y nos puede dar problemas, por eso lo recuperamos otra vez
-            entity = hb.getManager().find(Proyecto.class, entity.getId());
+            List<Empleado> empleados=  entity.getEmpleado();
+            if(empleados == null){
+            for (int i = 0; i < empleados.size(); i++) {
+                entity.removeEmpleado(empleados.get(i));
+            }}
+            modify(entity);
             hb.getManager().remove(entity);
             hb.getTransaction().commit();
-            hb.close();
             return true;
         } catch (Exception e) {
             throw new EmpleadoException("Error al eliminar proyecto con uuid: " + entity.getId() + "\n" + e.getMessage());

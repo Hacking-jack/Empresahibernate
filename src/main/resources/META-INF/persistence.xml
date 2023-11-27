@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<persistence xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns="https://jakarta.ee/xml/ns/persistence"
+             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
+             version="3.0">
+    <persistence-unit name="default">
+
+        <description>Empresa JPA</description>
+        <!-- Indicamos el “provider” que es la implementación de JPA que estamos usando.
+             En nuestro ejemplo Hibernate, pero existen otros proveedores como EclipseLink: -->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <!-- Escanea automáticamente las clases de entidad en el paquete "model" -->
+        <!--        <exclude-unlisted-classes>false</exclude-unlisted-classes>-->
+
+        <class>model.Empleado</class>
+        <class>model.Departamento</class>
+        <class>model.Proyecto</class>
+
+        <properties>
+            <!-- Configuraciones de Hibernate -->
+            <property name="hibernate.show_sql" value="false"/>
+            <property name="hibernate.format_sql" value="true"/>
+
+            <!-- Datos de conexión a la base de datos -->
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:mariadb://localhost:7706/empresa"/>
+            <property name="jakarta.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver"/>
+            <property name="jakarta.persistence.jdbc.user" value="root"/>
+            <property name="jakarta.persistence.jdbc.password" value="root"/>
+
+            <!-- Inicialización de datos de la base de datos -->
+<!--            <property name="jakarta.persistence.schema-generation.database.action" value="none"/>-->
+<!--            <property name="jakarta.persistence.schema-generation.database.action" value="create"/>-->
+            <property name="jakarta.persistence.sql-load-script-source" value="META-INF/sql/insert.sql"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+        </properties>
+
+    </persistence-unit>
+</persistence>

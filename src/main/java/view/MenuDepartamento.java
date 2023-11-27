@@ -8,6 +8,7 @@ import controller.EmpleadoController;
 import io.IO;
 import model.Departamento;
 import model.Empleado;
+import repositorios.empleados.EmpleadosRepositoryImpl;
 
 public class MenuDepartamento {
 	
@@ -69,7 +70,7 @@ public class MenuDepartamento {
 		IO.println(anadido.isNull() ? "Añadido" : "No se ha podido añadir");
 	}
 
-	private static void modificar(DepartamentoController dao) {
+	public static void modificar(DepartamentoController dao) {
 		IO.print("Código del departamento a modificar ? ");
 		Integer id = IO.readInt();
 		Optional<Departamento> d = dao.getDepartamentoId(id);
@@ -82,18 +83,21 @@ public class MenuDepartamento {
 		if (!nombre.isBlank()) {
 			d.get().setNombre(nombre);
 		}
-		IO.printf("Jefe [%s] ? ", d.get().getJefe().show());
+		IO.printf("Jefe [%s] ? ", d.get().getJefe());
 		Integer jefe = IO.readIntOrNull();
 		if (jefe != null) {
 
-			EmpleadoController daoEmpleado = new EmpleadoController();
-			d.get().setJefe(daoEmpleado.getEmpleadoId(jefe).get());
+//			EmpleadoController daoEmpleado = new EmpleadoController();
+//			d.get().setJefe(daoEmpleado.getEmpleadoId(jefe).get());
+			EmpleadosRepositoryImpl empleadoRepository = new EmpleadosRepositoryImpl();
+			Empleado je = empleadoRepository.findById(jefe).orElse(null);
+			d.get().setJefe(je);
 		}
 		Departamento anadido = dao.crearDepartamento(d.get());
 		IO.println(anadido.isNull() ? "Modificado" : "No se ha podido modificar");
 	}
 
-	private static void mostrar(DepartamentoController dao) {
+	public static void mostrar(DepartamentoController dao) {
 		for (Departamento d : dao.getDepartamentos()) {
 			IO.println(d.show());
 		}

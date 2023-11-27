@@ -1,11 +1,13 @@
 package repositorios.departamentos;
 
+import controller.EmpleadoController;
 import db.HibernateManager;
 import exceptions.DepartamentoException;
 import exceptions.EmpleadoException;
 import jakarta.persistence.TypedQuery;
 import model.Departamento;
 import model.Empleado;
+import repositorios.empleados.EmpleadosRepositoryImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,6 +49,34 @@ public class DepartamentosRepositoryImpl implements DepartamentosRepository {
     }
 
     @Override
+    public Departamento modify(Departamento entity) {
+        logger.info("save()");
+        HibernateManager hb = HibernateManager.getInstance();
+        hb.open();
+        hb.getTransaction().begin();
+
+        // Por otro lado y si la raqueta no existe? Podemos controlar que exista el departamento
+        // antes de guardar el empleado o que la inserte con el empleado. Vamos a ser restrictivos
+        if(entity.getJefe() != null){
+            var existeJefe = hb.getManager().find(entity.getClass(), entity.getJefe());
+            if (existeJefe == null) {
+                throw new EmpleadoException("El empleado con nombre: " + entity.getJefe().getNombre() + " no existe");
+            }
+        }
+        try {
+            hb.getManager().merge(entity);
+            hb.getTransaction().commit();
+            hb.close();
+            return entity;
+        } catch (Exception e) {
+            throw new EmpleadoException("Error al salvar Departamento con Nombre: " + entity.getNombre() + "\n" + e.getMessage());
+        } finally {
+            if (hb.getTransaction().isActive()) {
+                hb.getTransaction().rollback();
+            }
+        }    }
+
+    @Override
     public Departamento create(Departamento entity) {
         logger.info("save()");
         HibernateManager hb = HibernateManager.getInstance();
@@ -55,12 +85,14 @@ public class DepartamentosRepositoryImpl implements DepartamentosRepository {
 
         // Por otro lado y si la raqueta no existe? Podemos controlar que exista el departamento
         // antes de guardar el empleado o que la inserte con el empleado. Vamos a ser restrictivos
-        var existeJefe = hb.getManager().find(entity.getClass(), entity.getJefe());
-        if (existeJefe == null) {
-            throw new EmpleadoException("El empleado con nombre: " + entity.getJefe().getNombre() + " no existe");
+        if(entity.getJefe() != null){
+            var existeJefe = hb.getManager().find(entity.getClass(), entity.getJefe());
+            if (existeJefe == null) {
+                throw new EmpleadoException("El empleado con nombre: " + entity.getJefe().getNombre() + " no existe");
+            }
         }
         try {
-            hb.getManager().merge(entity);
+            hb.getManager().persist(entity);
             hb.getTransaction().commit();
             hb.close();
             return entity;
@@ -80,11 +112,15 @@ public class DepartamentosRepositoryImpl implements DepartamentosRepository {
         hb.open();
         try {
             hb.getTransaction().begin();
-            // Ojo que borrar implica que estemos en la misma sesión y nos puede dar problemas, por eso lo recuperamos otra vez
-            entity = hb.getManager().find(Departamento.class, entity.getJefe());
+
+           List<Empleado> empleados= entity.getEmpleados();
+            for (int i = 0; i < empleados.size(); i++) {
+                empleados.get(i).removeDepartamento();
+            }
+            entity.setJefe(null);
+            modify(entity);
             hb.getManager().remove(entity);
             hb.getTransaction().commit();
-            hb.close();
             return true;
         } catch (Exception e) {
             throw new DepartamentoException("Error al eliminar Departamento con id: " + entity.getId() + "\n" + e.getMessage());
